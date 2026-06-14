@@ -1,0 +1,621 @@
+[index5.txt](https://github.com/user-attachments/files/28928584/index5.txt)
+import { useState, useMemo } from "react";
+import { Helmet } from "react-helmet-async";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "@/hooks/use-toast";
+import {
+  Sparkles, Award, Clock, Shield, Phone, MessageCircle, MapPin, Mail,
+  CheckCircle2, Star, Palette, Printer, Megaphone, Zap, Users, TrendingUp,
+  ArrowLeft, Quote, GraduationCap, Newspaper, Tv, Video, Film, MonitorPlay,
+  Smartphone, Presentation, Instagram, Facebook, Linkedin, Bitcoin, Copy
+} from "lucide-react";
+import heroBg from "@/assets/hero-bg.jpg";
+import logoAsset from "@/assets/logo-mostaqbal.png.asset.json";
+import pRestaurantMenu from "@/assets/portfolio-restaurant-menu.png.asset.json";
+import pClinicCards from "@/assets/portfolio-clinic-cards.png.asset.json";
+import pSchoolDesigns from "@/assets/portfolio-school-designs.png.asset.json";
+import pTourismDesigns from "@/assets/portfolio-tourism-designs.png.asset.json";
+import pWeddingDesigns from "@/assets/portfolio-wedding-designs.png.asset.json";
+import pBrandShowcase from "@/assets/portfolio-brand-showcase.png.asset.json";
+
+const sectors = [
+  { id: "all", name: "كل الأعمال" },
+  { id: "restaurant", name: "مطاعم وكافيهات" },
+  { id: "tourism", name: "سياحة وسفر" },
+  { id: "school", name: "مدارس وتعليم" },
+  { id: "clinic", name: "عيادات وطب" },
+  { id: "wedding", name: "أفراح ومناسبات" },
+  { id: "corporate", name: "هوية وبراند" },
+];
+
+const portfolio = [
+  { id: 1, img: pRestaurantMenu.url, title: "تصميمات منيو وكروت مطاعم", sector: "restaurant", tag: "مطاعم وكافيهات" },
+  { id: 2, img: pTourismDesigns.url, title: "حملات وهوية لشركات السياحة", sector: "tourism", tag: "سياحة وسفر" },
+  { id: 3, img: pSchoolDesigns.url, title: "إعلانات وهوية للمدارس", sector: "school", tag: "مدارس وتعليم" },
+  { id: 4, img: pClinicCards.url, title: "كروت وهوية للعيادات", sector: "clinic", tag: "عيادات وطب" },
+  { id: 5, img: pWeddingDesigns.url, title: "تصميمات مناسبات ومنظمي حفلات", sector: "wedding", tag: "أفراح ومناسبات" },
+  { id: 6, img: pBrandShowcase.url, title: "عرض أعمال البراند المطبوعة", sector: "corporate", tag: "هوية وبراند" },
+];
+
+const stats = [
+  { value: "+3", label: "سنوات من العمل الجاد", icon: Award },
+  { value: "+120", label: "عميل وثق بنا", icon: Users },
+  { value: "+350", label: "مشروع تم تسليمه", icon: CheckCircle2 },
+  { value: "95%", label: "نسبة رضا العملاء", icon: TrendingUp },
+];
+
+const features = [
+  { icon: Award, title: "فريق متخصص", desc: "خبراء في الهوية البصرية والطباعة والتسويق الرقمي بسوق القاهرة." },
+  { icon: Shield, title: "ضمان الجودة", desc: "نضمن جودة الطباعة والتصميم أو نعيد العمل مجاناً." },
+  { icon: Zap, title: "سرعة التسليم", desc: "تسليم سريع خلال 48 ساعة للمشاريع المستعجلة." },
+  { icon: MessageCircle, title: "استشارة مجانية", desc: "نناقش رؤيتك ونرسم استراتيجيتك قبل أي التزام." },
+  { icon: Palette, title: "هوية بصرية مميزة", desc: "تصاميم رقمية ومطبوعة تترك أثراً يصعب نسيانه." },
+  { icon: Printer, title: "طباعة احترافية", desc: "كروت، يافطات، بنرات، كتب — جودة عالية وخامات ممتازة." },
+];
+
+const services = [
+  {
+    name: "باقة الانطلاق الذكي", subtitle: "Start-up Package", price: "3,000", popular: false,
+    target: "المحلات الجديدة، الكافيهات الصغيرة، أو العيادات في بداية افتتاحها",
+    items: [
+      "تصميم لوجو احترافي (مع تعديلين بناءً على رغبتك)",
+      "تصميم كارت الشخصي (Business Card)",
+      "تصميم غلاف وصورة بروفايل لصفحة الفيسبوك والإنستغرام",
+      "طباعة 1000 كارت شخصي (كوشيه 350 جرام، سيلوفان لامع أو مطفي)",
+      "تصميم وطباعة 500 فلاير (Flyer) مقاس A5",
+    ],
+  },
+  {
+    name: "باقة الهوية المتكاملة", subtitle: "Growth Package", price: "7,000", popular: true,
+    target: "الشركات الناشئة الطموحة، المدارس الخاصة، المطاعم اللي بتعمل ريبراندنج",
+    items: [
+      "تصميم هوية بصرية كاملة (لوجو + خطوط وألوان رسمية + مطبوعات)",
+      "تصميم 6 بوستات سوشيال ميديا لمنتجاتك أو خدماتك",
+      "تصميم منيو (Menu) أو بروشور (Brochure) تعريفي بالخدمات",
+      "طباعة 1000 كارت شخصي فاخر (سبوت يو في Spot UV أو كوشيه تقيل)",
+      "طباعة 1000 فلاير أو منيو A4 مطوي",
+      "طباعة 5 دفاتر فواتير/إيصالات باسم وشعار المكتب",
+      "تصميم لوحة المحل الخارجية (Banner/Flex) جاهزة للطباعة",
+    ],
+  },
+  {
+    name: "باقة المستقبل الاحترافية", subtitle: "Premium Mega Package", price: "18,000", popular: false,
+    target: "البراندات الفاخرة، الشركات الكبرى، أو المشاريع اللي تريد متجر إلكتروني ومحتوى فيديو",
+    items: [
+      "تصميم هوية تجارية كاملة وشاملة (Full Visual Identity Guide)",
+      "بناء وتصميم موقع إلكتروني تعريفي أو متجر إلكتروني متوافق مع الموبايل",
+      "كتابة سيناريو وصناعة 3 فيديوهات ريلز/تيك توك احترافية",
+      "إدارة محتوى وتصميم 12 بوست للسوشيال ميديا (خطة شهر كامل)",
+      "طباعة 2000 كارت شخصي فاخر",
+      "طباعة 1000 شنطة ورقية أو كرتون مطبوعة باللوجو",
+      "علب أو ستيكرات لاصقة (1000 قطعة) لتغليف المنتجات",
+    ],
+  },
+];
+
+const testimonials = [
+  { name: "أحمد محمود", role: "صاحب مطعم - مدينة نصر", text: "اشتغلوا معايا على هوية المطعم من الصفر، التصميم نضيف والطباعة ممتازة وسعر مناسب." },
+  { name: "د. سارة حسن", role: "طبيبة أسنان - المعادي", text: "عملوا لي كارت ذكي NFC وكروت شخصية فخمة، العملاء بيسألوا عنها دايماً." },
+  { name: "خالد إبراهيم", role: "مدير شركة سياحة", text: "البنرات والبروشورات وصلت في الميعاد بالظبط، تعامل محترم والتزام واضح." },
+];
+
+const courses = [
+  { icon: Newspaper, title: "الصحافة الإلكترونية", desc: "كتابة الخبر، تحرير المحتوى الرقمي، إدارة المواقع الإخبارية والـSEO الصحفي.", duration: "4 أسابيع", level: "مبتدئ → محترف" },
+  { icon: Tv, title: "الجرافيك التليفزيوني", desc: "تصميم الموشن جرافيك، الـLower Thirds، الـBumpers والهويات البصرية للقنوات.", duration: "6 أسابيع", level: "متوسط" },
+  { icon: MonitorPlay, title: "الاستديوهات الافتراضية", desc: "العمل على الـVirtual Studio، الكروما، التتبع، ودمج البيئات ثلاثية الأبعاد مع البث المباشر.", duration: "5 أسابيع", level: "متقدم" },
+  { icon: Film, title: "الإنتاج والمونتاج", desc: "Premiere & After Effects، تصحيح الألوان، هندسة الصوت، وإخراج الفيديوهات الاحترافية.", duration: "8 أسابيع", level: "شامل" },
+  { icon: GraduationCap, title: "التعليم عن بُعد", desc: "تصميم المحتوى التعليمي الرقمي، منصات الـLMS، وأدوات التفاعل والاختبارات الإلكترونية.", duration: "4 أسابيع", level: "للمعلمين والمدربين" },
+  { icon: Smartphone, title: "تصميم التطبيقات", desc: "UI/UX، نماذج Figma التفاعلية، وبناء تطبيقات الموبايل بدون كود (No-Code).", duration: "6 أسابيع", level: "مبتدئ → متوسط" },
+  { icon: Presentation, title: "العروض التقديمية", desc: "احتراف PowerPoint & Canva، فن السرد البصري (Storytelling)، وإلقاء العروض الاحترافية.", duration: "3 أسابيع", level: "تطبيقي" },
+];
+
+
+export default function Index() {
+  const [activeSector, setActiveSector] = useState("all");
+  const [form, setForm] = useState({ name: "", phone: "", business: "", sector: "", details: "" });
+
+  const filtered = useMemo(
+    () => (activeSector === "all" ? portfolio : portfolio.filter(p => p.sector === activeSector)),
+    [activeSector]
+  );
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.phone.trim()) {
+      toast({ title: "بيانات ناقصة", description: "من فضلك أدخل الاسم ورقم الهاتف.", variant: "destructive" });
+      return;
+    }
+    toast({
+      title: "تم استلام طلبك ✨",
+      description: "سيتواصل معك فريقنا خلال 24 ساعة بتحليل مجاني لهوية نشاطك.",
+    });
+    setForm({ name: "", phone: "", business: "", sector: "", details: "" });
+  };
+
+  return (
+    <div className="min-h-screen bg-background font-body" dir="rtl">
+      <Helmet>
+        <title>مكتب المستقبل للدعاية والإعلان بالقاهرة</title>
+        <meta name="description" content="مكتب المستقبل: تصميم هوية بصرية، طباعة كروت، لافتات ومطبوعات لجميع القطاعات في القاهرة بضمان الجودة." />
+        <link rel="canonical" href="https://cairo-promo-pioneer.lovable.app/" />
+        <meta property="og:title" content="مكتب المستقبل للدعاية والإعلان بالقاهرة" />
+        <meta property="og:description" content="هوية بصرية، طباعة، لافتات ومطبوعات احترافية في القاهرة." />
+        <meta property="og:url" content="https://cairo-promo-pioneer.lovable.app/" />
+      </Helmet>
+      {/* Nav */}
+      <header className="fixed top-0 inset-x-0 z-50 glass">
+        <div className="container flex items-center justify-between h-16">
+          <a href="#" className="flex items-center gap-3 text-white font-display font-extrabold text-xl">
+            <div className="w-12 h-12 rounded-xl bg-white shadow-glow flex items-center justify-center p-1.5 shrink-0">
+              <img src={logoAsset.url} alt="شعار مكتب المستقبل" className="w-full h-full object-contain" />
+            </div>
+            <span className="hidden sm:inline">المستقبل<span className="text-gradient-gold"> Ad</span></span>
+          </a>
+          <nav className="hidden md:flex items-center gap-7 text-sm text-white/85">
+            <a href="#services" className="hover:text-gold transition-smooth">الخدمات</a>
+            <a href="#portfolio" className="hover:text-gold transition-smooth">أعمالنا</a>
+            <a href="#courses" className="hover:text-gold transition-smooth">الكورسات</a>
+            <a href="#why" className="hover:text-gold transition-smooth">لماذا نحن</a>
+            <a href="#packages" className="hover:text-gold transition-smooth">الباقات</a>
+            <a href="#contact" className="hover:text-gold transition-smooth">تواصل</a>
+          </nav>
+
+          <Button variant="hero" size="sm" asChild>
+            <a href="#analysis">تحليل مجاني</a>
+          </Button>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
+        <img src={heroBg} alt="مكتب المستقبل للدعاية بالقاهرة" width={1920} height={1080}
+          className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-l from-primary/95 via-primary/85 to-primary/60" />
+        <div className="container relative z-10 py-24">
+          <div className="max-w-3xl animate-fade-up">
+            <Badge className="bg-gold/15 text-gold border-gold/30 backdrop-blur mb-6 px-4 py-1.5 text-sm">
+              <Sparkles className="w-3.5 h-3.5 ml-1" /> الرائد في الدعاية والإعلان بالقاهرة
+            </Badge>
+            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
+              نصنع براند<span className="text-gradient-gold"> يسيطر </span>
+              على السوق<br />ويُغيّر مستقبل نشاطك
+            </h1>
+            <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed max-w-2xl">
+              مكتب المستقبل للدعاية والإعلان بالقاهرة — هوية بصرية رقمية، طباعة كروت ويافطات وبنرات، كروت ذكية NFC، مواقع إلكترونية، وإدارة إعلانات ممولة.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Button variant="hero" size="xl" asChild>
+                <a href="#analysis">
+                  <Sparkles className="w-5 h-5" />
+                  احصل على تحليل مجاني خلال 24 ساعة
+                </a>
+              </Button>
+              <Button variant="outlineLight" size="xl" asChild>
+                <a href="#portfolio">شاهد أعمالنا <ArrowLeft className="w-5 h-5" /></a>
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-6 mt-10 text-white/80 text-sm">
+              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-secondary" /> ضمان الجودة</div>
+              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-secondary" /> تسليم خلال 48 ساعة</div>
+              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-secondary" /> أسعار تنافسية</div>
+            </div>
+          </div>
+        </div>
+        <div className="absolute -bottom-1 inset-x-0 h-24 bg-gradient-to-b from-transparent to-background" />
+      </section>
+
+      {/* Stats */}
+      <section className="py-16 bg-gradient-dark relative -mt-1">
+        <div className="container grid grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((s, i) => (
+            <div key={i} className="text-center text-white animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
+              <s.icon className="w-9 h-9 text-gold mx-auto mb-3" />
+              <div className="font-display text-4xl md:text-5xl font-black text-gradient-gold mb-1">{s.value}</div>
+              <div className="text-white/70 text-sm md:text-base">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Why us */}
+      <section id="why" className="py-24">
+        <div className="container">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <Badge variant="secondary" className="mb-4">لماذا نحن</Badge>
+            <h2 className="font-display text-3xl md:text-5xl font-black text-primary mb-4">
+              لماذا يثق بنا <span className="text-gradient-turquoise">أكبر العلامات</span> في القاهرة
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              لأننا لا نطبع فقط — نحن نبني علامات تجارية تكبر مع الوقت.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((f, i) => (
+              <Card key={i} className="p-7 bg-gradient-card border-border/60 hover:border-secondary/50 hover:-translate-y-1 transition-smooth shadow-card group">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-primary text-primary-foreground flex items-center justify-center mb-5 group-hover:bg-gradient-turquoise transition-smooth">
+                  <f.icon className="w-7 h-7" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-primary mb-2">{f.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{f.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Portfolio */}
+      <section id="portfolio" className="py-24 bg-muted/40">
+        <div className="container">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <Badge variant="secondary" className="mb-4">معرض الأعمال</Badge>
+            <h2 className="font-display text-3xl md:text-5xl font-black text-primary mb-4">
+              أعمال صنعناها <span className="text-gradient-gold">بفخر</span>
+            </h2>
+            <p className="text-muted-foreground text-lg">صفّي الأعمال حسب القطاع الذي يخصّك</p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
+            {sectors.map(s => (
+              <button key={s.id} onClick={() => setActiveSector(s.id)}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition-smooth ${
+                  activeSector === s.id
+                    ? "bg-gradient-primary text-primary-foreground shadow-elegant"
+                    : "bg-white text-primary border border-border hover:border-secondary"
+                }`}>
+                {s.name}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {filtered.map(p => (
+              <Card key={p.id} className="group overflow-hidden border-0 shadow-card hover:shadow-elegant transition-smooth">
+                <div className="relative aspect-square overflow-hidden">
+                  <img src={p.img} alt={p.title} width={800} height={800} loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-smooth duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-smooth flex flex-col justify-end p-5">
+                    <Badge className="bg-gold text-gold-foreground self-start mb-2">{p.tag}</Badge>
+                    <h3 className="text-white font-display font-bold text-lg">{p.title}</h3>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Free analysis CTA — main strategic feature */}
+      <section id="analysis" className="py-24 bg-hero relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20"
+          style={{ backgroundImage: 'radial-gradient(circle at 20% 20%, hsl(var(--gold)/0.4), transparent 40%), radial-gradient(circle at 80% 80%, hsl(var(--secondary)/0.4), transparent 40%)' }} />
+        <div className="container relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-white">
+            <Badge className="bg-gold/20 text-gold border-gold/40 mb-5">عرض حصري</Badge>
+            <h2 className="font-display text-3xl md:text-5xl font-black mb-5 leading-tight">
+              احصل على <span className="text-gradient-gold">تحليل مجاني</span> لهوية نشاطك خلال 24 ساعة
+            </h2>
+            <p className="text-white/85 text-lg mb-8 leading-relaxed">
+              فريقنا من خبراء البراند سيحلّل وضع علامتك التجارية الحالي، ويرسل لك تقريراً تفصيلياً عن نقاط القوة، الفرص الضائعة، وخطة عملية للسيطرة على سوقك — مجاناً وبدون أي التزام.
+            </p>
+            <ul className="space-y-3 mb-8">
+              {["تحليل الهوية البصرية الحالية", "مقارنة مع أقوى المنافسين في القاهرة", "خطة براند مخصصة لقطاعك", "اقتراح باقة مناسبة لميزانيتك"].map((t, i) => (
+                <li key={i} className="flex items-center gap-3 text-white/90">
+                  <CheckCircle2 className="w-5 h-5 text-gold shrink-0" /> {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <Card className="p-7 md:p-9 bg-white/95 backdrop-blur shadow-elegant border-0">
+            <h3 className="font-display text-2xl font-black text-primary mb-1">اطلب تحليلك الآن</h3>
+            <p className="text-muted-foreground mb-6 text-sm">سنتواصل معك خلال 24 ساعة عمل</p>
+            <form onSubmit={submit} className="space-y-4">
+              <div>
+                <Label htmlFor="name">الاسم الكامل *</Label>
+                <Input id="name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="اسمك" maxLength={80} />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="phone">رقم الهاتف *</Label>
+                  <Input id="phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="01xxxxxxxxx" maxLength={20} />
+                </div>
+                <div>
+                  <Label htmlFor="business">اسم النشاط</Label>
+                  <Input id="business" value={form.business} onChange={e => setForm({ ...form, business: e.target.value })} placeholder="مثال: مطعم البركة" maxLength={80} />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="sector">القطاع</Label>
+                <select id="sector" value={form.sector} onChange={e => setForm({ ...form, sector: e.target.value })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                  <option value="">اختر قطاع نشاطك</option>
+                  {sectors.slice(1).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  <option value="other">قطاع آخر</option>
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="details">تفاصيل إضافية</Label>
+                <Textarea id="details" value={form.details} onChange={e => setForm({ ...form, details: e.target.value })}
+                  placeholder="حدثنا عن نشاطك وما تطمح إليه..." maxLength={500} rows={3} />
+              </div>
+              <Button type="submit" variant="hero" size="lg" className="w-full">
+                <Sparkles className="w-5 h-5" /> أرسل طلب التحليل المجاني
+              </Button>
+              <p className="text-xs text-muted-foreground text-center">بياناتك آمنة ولن تُستخدم لأي غرض آخر</p>
+            </form>
+          </Card>
+        </div>
+      </section>
+
+      {/* Packages */}
+      <section id="packages" className="py-24">
+        <div className="container">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <Badge variant="secondary" className="mb-4">باقات الخدمات</Badge>
+            <h2 className="font-display text-3xl md:text-5xl font-black text-primary mb-4">
+              اختر <span className="text-gradient-turquoise">باقتك</span> وابدأ السيطرة
+            </h2>
+            <p className="text-muted-foreground text-lg">باقات مرنة تناسب كل المراحل، من البداية حتى قيادة السوق</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 items-start">
+            {services.map((p, i) => (
+              <Card key={i} className={`p-7 relative transition-smooth h-full flex flex-col ${
+                p.popular
+                  ? "bg-gradient-primary text-primary-foreground border-0 shadow-elegant scale-105 lg:scale-110"
+                  : "bg-gradient-card hover:-translate-y-1 shadow-card"
+              }`}>
+                {p.popular && (
+                  <Badge className="absolute -top-3 right-6 bg-gradient-gold text-gold-foreground shadow-gold">
+                    الأكثر طلباً
+                  </Badge>
+                )}
+                <h3 className={`font-display text-xl font-black mb-0.5 ${p.popular ? "text-white" : "text-primary"}`}>{p.name}</h3>
+                <p className={`text-[11px] font-medium tracking-wide mb-2 ${p.popular ? "text-white/50" : "text-muted-foreground"}`}>{p.subtitle}</p>
+                <p className={`text-xs leading-relaxed mb-4 ${p.popular ? "text-white/70" : "text-muted-foreground"}`}>المستهدف: {p.target}</p>
+                <div className="mb-5">
+                  <span className={`text-4xl font-black ${p.popular ? "text-gradient-gold" : "text-primary"}`}>{p.price}</span>
+                  <span className={`${p.popular ? "text-white/70" : "text-muted-foreground"} mr-2`}>ج.م</span>
+                </div>
+                <ul className="space-y-2.5 mb-8 flex-1">
+                  {p.items.map((it, j) => (
+                    <li key={j} className={`flex items-start gap-2 ${p.popular ? "text-white/90" : "text-foreground"}`}>
+                      <CheckCircle2 className={`w-5 h-5 shrink-0 mt-0.5 ${p.popular ? "text-gold" : "text-secondary"}`} />
+                      <span className="text-sm leading-snug">{it}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button variant={p.popular ? "hero" : "default"} size="lg" className="w-full mt-auto" asChild>
+                  <a href="#analysis">ابدأ الآن</a>
+                </Button>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Social / Contact Buttons (after packages) */}
+      <section id="social" className="py-16 bg-muted/30">
+        <div className="container">
+          <div className="text-center max-w-2xl mx-auto mb-8">
+            <Badge variant="secondary" className="mb-3">تابعنا وتواصل معنا</Badge>
+            <h2 className="font-display text-2xl md:text-4xl font-black text-primary">
+              كل قنوات <span className="text-gradient-turquoise">التواصل</span> في مكان واحد
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+            {[
+              { icon: MessageCircle, title: "واتساب", value: "01559052901", href: "https://wa.me/201559052901" },
+              { icon: Instagram, title: "إنستجرام", value: "@mostakbal2026", href: "https://www.instagram.com/mostakbal2026" },
+              { icon: Facebook, title: "فيسبوك", value: "صفحتنا الرسمية", href: "https://www.facebook.com/61590375516884" },
+              { icon: Linkedin, title: "لينكدإن", value: "almostakbal-media", href: "https://www.linkedin.com/in/almostakbal-media" },
+              { icon: Mail, title: "البريد", value: "almostakbalmedia@gmail.com", href: "mailto:almostakbalmedia@gmail.com" },
+              {
+                icon: Bitcoin, title: "Binance ID", value: "782754330",
+                onClick: () => {
+                  navigator.clipboard.writeText("782754330");
+                  toast({ title: "تم نسخ Binance ID", description: "782754330" });
+                },
+              },
+            ].map((c, i) => {
+              const inner = (
+                <>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center mb-3 shadow-elegant">
+                    <c.icon className="w-5 h-5 text-primary-foreground" />
+                  </div>
+                  <h3 className="font-bold mb-1 text-sm text-primary">{c.title}</h3>
+                  <p className="text-muted-foreground text-xs break-all">{c.value}</p>
+                  {"onClick" in c && (
+                    <span className="mt-2 inline-flex items-center gap-1 text-[10px] text-secondary">
+                      <Copy className="w-3 h-3" /> اضغط للنسخ
+                    </span>
+                  )}
+                </>
+              );
+              const cls = "p-5 rounded-2xl bg-white border border-border hover:border-secondary hover:-translate-y-1 shadow-card transition-smooth flex flex-col items-center";
+              return "onClick" in c ? (
+                <button key={i} type="button" onClick={c.onClick} className={cls}>{inner}</button>
+              ) : (
+                <a key={i} href={c.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+
+
+      {/* Courses */}
+      <section id="courses" className="py-24 bg-gradient-dark text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-25 pointer-events-none"
+          style={{ backgroundImage: 'radial-gradient(circle at 15% 30%, hsl(var(--secondary)/0.5), transparent 45%), radial-gradient(circle at 85% 70%, hsl(var(--gold)/0.4), transparent 45%)' }} />
+        <div className="container relative z-10">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <Badge className="bg-gold/15 text-gold border-gold/30 mb-4">أكاديمية المستقبل</Badge>
+            <h2 className="font-display text-3xl md:text-5xl font-black mb-4">
+              كورسات <span className="text-gradient-gold">احترافية</span> تصنع منك خبيراً
+            </h2>
+            <p className="text-white/75 text-lg">
+              تدريب عملي بأيدي خبراء الإعلام والتصميم — شهادات معتمدة، تطبيقات مباشرة، ومشاريع تخرّج حقيقية.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {courses.map((c, i) => (
+              <Card key={i} className="p-7 bg-white/5 border-white/10 backdrop-blur hover:bg-white/10 hover:border-gold/40 hover:-translate-y-1 transition-smooth group">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-turquoise text-white flex items-center justify-center mb-5 group-hover:bg-gradient-gold transition-smooth shadow-glow">
+                  <c.icon className="w-7 h-7" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-white mb-2">{c.title}</h3>
+                <p className="text-white/70 leading-relaxed text-sm mb-5">{c.desc}</p>
+                <div className="flex items-center justify-between pt-4 border-t border-white/10 text-xs">
+                  <span className="flex items-center gap-1.5 text-gold"><Clock className="w-3.5 h-3.5" /> {c.duration}</span>
+                  <span className="text-white/60">{c.level}</span>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Button variant="hero" size="xl" asChild>
+              <a href="https://wa.me/201559052901?text=اهتم%20بالاشتراك%20في%20كورسات%20أكاديمية%20المستقبل"
+                 target="_blank" rel="noopener noreferrer">
+                <GraduationCap className="w-5 h-5" /> سجّل اهتمامك بالكورسات
+              </a>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+
+      <section className="py-24 bg-muted/40">
+        <div className="container">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <Badge variant="secondary" className="mb-4">آراء العملاء</Badge>
+            <h2 className="font-display text-3xl md:text-5xl font-black text-primary mb-4">
+              يحكوا عننا <span className="text-gradient-gold">بصدق</span>
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <Card key={i} className="p-7 bg-white shadow-card border-0 relative">
+                <Quote className="absolute top-5 left-5 w-10 h-10 text-secondary/15" />
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-gold text-gold" />)}
+                </div>
+                <p className="text-foreground leading-relaxed mb-5">"{t.text}"</p>
+                <div className="flex items-center gap-3 pt-4 border-t border-border">
+                  <div className="w-11 h-11 rounded-full bg-gradient-primary text-primary-foreground flex items-center justify-center font-bold">
+                    {t.name[0]}
+                  </div>
+                  <div>
+                    <div className="font-bold text-primary">{t.name}</div>
+                    <div className="text-xs text-muted-foreground">{t.role}</div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact */}
+      <section id="contact" className="py-24 bg-gradient-dark text-white">
+        <div className="container">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <Badge className="bg-gold/15 text-gold border-gold/30 mb-4">تواصل معنا</Badge>
+            <h2 className="font-display text-3xl md:text-5xl font-black mb-3">جاهزين نبدأ <span className="text-gradient-gold">براندك</span>؟</h2>
+            <p className="text-white/70">اتصل بنا مباشرة أو راسلنا على واتساب</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            {[
+              { name: "د. معز عوض", phone: "01151871576", wa: "201151871576" },
+              { name: "ميرغني بدرالدين", phone: "01515981573", wa: "201515981573" },
+            ].map((p, i) => (
+              <Card key={i} className="p-6 bg-white/5 border-white/10 backdrop-blur text-white">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-turquoise flex items-center justify-center font-display font-black text-xl">{p.name[0]}</div>
+                  <div className="flex-1">
+                    <div className="font-display font-bold text-lg">{p.name}</div>
+                    <a href={`tel:+2${p.phone}`} dir="ltr" className="text-white/75 hover:text-gold transition-smooth text-sm">{p.phone}</a>
+                  </div>
+                  <a href={`https://wa.me/${p.wa}`} target="_blank" rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-secondary/20 hover:bg-secondary flex items-center justify-center transition-smooth">
+                    <MessageCircle className="w-5 h-5" />
+                  </a>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+            {[
+              { icon: MessageCircle, title: "واتساب", value: "01559052901", href: "https://wa.me/201559052901" },
+              { icon: Mail, title: "البريد", value: "almostakbalmedia@gmail.com", href: "mailto:almostakbalmedia@gmail.com" },
+              { icon: Instagram, title: "إنستجرام", value: "@mostakbal2026", href: "https://www.instagram.com/mostakbal2026" },
+              { icon: Facebook, title: "فيسبوك", value: "صفحتنا الرسمية", href: "https://www.facebook.com/61590375516884" },
+              { icon: Linkedin, title: "لينكدإن", value: "almostakbal-media", href: "https://www.linkedin.com/in/almostakbal-media" },
+              {
+                icon: Bitcoin, title: "Binance ID", value: "782754330",
+                onClick: () => {
+                  navigator.clipboard.writeText("782754330");
+                  toast({ title: "تم نسخ Binance ID", description: "782754330" });
+                },
+              },
+            ].map((c, i) => {
+              const inner = (
+                <>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-gold flex items-center justify-center mb-3 shadow-gold">
+                    <c.icon className="w-5 h-5 text-gold-foreground" />
+                  </div>
+                  <h3 className="font-bold mb-1 text-sm">{c.title}</h3>
+                  <p className="text-white/70 text-xs break-all">{c.value}</p>
+                  {"onClick" in c && (
+                    <span className="mt-2 inline-flex items-center gap-1 text-[10px] text-gold/80">
+                      <Copy className="w-3 h-3" /> اضغط للنسخ
+                    </span>
+                  )}
+                </>
+              );
+              const cls = "p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur hover:bg-white/10 hover:border-gold/40 transition-smooth flex flex-col items-center";
+              return "onClick" in c ? (
+                <button key={i} type="button" onClick={c.onClick} className={cls}>{inner}</button>
+              ) : (
+                <a key={i} href={c.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+              );
+            })}
+          </div>
+
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-primary text-primary-foreground py-10">
+        <div className="container text-center">
+          <div className="flex items-center justify-center gap-3 font-display font-extrabold text-2xl mb-2">
+            <div className="w-14 h-14 rounded-xl bg-white p-1.5 shrink-0">
+              <img src={logoAsset.url} alt="شعار مكتب المستقبل" className="w-full h-full object-contain" />
+            </div>
+            المستقبل <span className="text-gradient-gold">Ad</span>
+          </div>
+
+          <p className="text-white/60 text-sm">© {new Date().getFullYear()} مكتب المستقبل للدعاية والإعلان — القاهرة. جميع الحقوق محفوظة.</p>
+        </div>
+      </footer>
+
+      {/* Floating WhatsApp */}
+      <a href="https://wa.me/201559052901" target="_blank" rel="noopener noreferrer" aria-label="تواصل واتساب"
+        className="fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-gradient-turquoise shadow-glow flex items-center justify-center text-white hover:scale-110 transition-smooth">
+        <MessageCircle className="w-7 h-7" />
+      </a>
+    </div>
+  );
+}
